@@ -11,6 +11,7 @@ void main() async {
   await path_provider.getApplicationDocumentsDirectory();
   Hive.init(appDocumentDirectory.path);
 
+  Hive.registerAdapter(RecipeAdapter());//register adapter
   await Hive.openBox('recipes'); // Open a box for storing Recipe objects
 
   runApp(MyApp());
@@ -68,7 +69,11 @@ class _RecipeListState extends State<RecipeList> {
   }
 
   Widget _buildRecipeList() {
+    if (!Hive.isBoxOpen('recipes')) {
+      return CircularProgressIndicator();
+    }
     final recipesBox = Hive.box('recipes');
+    print(recipesBox.length);
     return ListView.builder(
       itemCount: recipesBox.length,
       itemBuilder: (context, index) {
@@ -151,14 +156,16 @@ class AddRecipeScreen extends StatelessWidget {
   }
 
   void saveRecipe(String title, String description, String ingredients, String instructions) {
+    if (!Hive.isBoxOpen('recipes')) {
+      Hive.openBox('recipes');
+    }
     final recipesBox = Hive.box('recipes');
-
     final newRecipe = Recipe()
       ..title = title
       ..description = description
       ..ingredients = ingredients.split(',').map((e) => e.trim()).toList()
       ..instructions = instructions;
-
     recipesBox.add(newRecipe);
+    print(title);
   }
 }
