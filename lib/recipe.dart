@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+part 'recipe.g.dart';
 
 @HiveType(typeId: 0)
 class Recipe extends HiveObject {
