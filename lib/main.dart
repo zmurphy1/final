@@ -1,8 +1,11 @@
+import 'package:final_recipe/recipedetailsscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:final_recipe/recipe.dart';
+
+import 'editrecipescreen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -82,7 +85,53 @@ class _RecipeListState extends State<RecipeList> {
           title: Text(recipe.title),
           subtitle: Text(recipe.description),
           onTap: () {
-            // Navigate to recipe details or edit page
+// Navigate to recipe details or edit page
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('Recipe Options'),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context); // Close the dialog
+                          // Navigate to recipe details
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => RecipeDetailsScreen(recipe: recipe),
+                            ),
+                          );
+                        },
+                        child: Text('View Recipe Details'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context); // Close the dialog
+                          // Navigate to edit screen
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => EditRecipeScreen(recipe: recipe),
+                            ),
+                          ).then((result) {
+                            // Handle result if needed
+                            if (result == true) {
+                              // If result is true, refresh the recipe list
+                              setState(() {});
+                            }
+                          });
+                        },
+                        child: Text('Edit Recipe'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
           },
           onLongPress: () {
             // Delete recipe
